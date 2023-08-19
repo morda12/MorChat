@@ -1,0 +1,54 @@
+<%-include('./partials/_header');%>
+
+  <body>
+    <%-include('./partials/_nav.ejs');%>
+      <div class=" w-50 py-5 m-auto col-md-7 col-lg-8">
+        <h4 class="mb-3">Login</h4>
+        </header>
+        <% if(message.error){ %>
+          <div class="alert alert-danger" role="alert">
+              <%= message.error %>
+          </div>
+          <% } %>
+        <form class="needs-validation" method="post" action="/users/login">
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="username" class="form-label">Username</label>
+              <div class="input-group has-validation">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" autocomplete="username" required autofocus>
+                <div class="invalid-feedback">
+                  Your username is required.
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group has-validation">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" utocomplete="current-password" required>
+                <div class="invalid-feedback">
+                  Please enter a valid password.
+                </div>
+              </div>
+              <div class="form-check text-start my-3">
+                <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                  Remember me
+                </label>
+                <hr class="my-4">
+              </div>
+            </div>
+            <button class="w-100 btn btn-primary btn-lg" type="submit">login</button>
+            <a class="w-100" href="./register"><button class="w-100 btn btn-outline-secondary my-2" type="button" >Register</button></a>
+        </form>
+
+        <section>
+          <h2>***</h2>
+          <p>
+            ***
+          </p>
+        </section>
+        <%-include('./partials/_footer');%>
+      </div>
+  </body>
+
+  </html>

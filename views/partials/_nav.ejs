@@ -1,0 +1,17 @@
+<nav class="navbar navbar-dark bg-primary navbar-expand">
+    <div class="container"><a class="navbar-brand" href="/">HelloMor</a>
+      <ul class="navbar-nav mr-auto nav-pills">
+        <li class="nav-item"><a class="nav-link <%= page === 'home' && 'active' %>" href="/"><span>Home</span></a></li>
+        <li class="nav-item"><a class="nav-link <%= page === 'about' && 'active' %>" href="/about"><span>About</span></a></li>
+        <% if (user) { %>
+        <li class="nav-item"><a class="nav-link <%= page === 'chat' && 'active' %>" href="/chat"><span>Chat</span></a></li>
+        <% } %>
+        <li class="nav-item"><a class="nav-link <%= page === 'contact' && 'active' %>" href="/contact"><span>Contact</span></a></li>
+      </ul>
+        <% if (user) { %>
+          <span class="navbar-text"><a class="nav-link" href="/users/logout"><span> Logout</span></a></span>
+        <% } else { %>
+          <span class="navbar-text"><a class="nav-link" href="/users/login"><span>Login</span></a></span>
+        <% } %>
+    </div>
+  </nav>

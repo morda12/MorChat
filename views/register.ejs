@@ -1,0 +1,77 @@
+<%-include('./partials/_header');%>
+  <body>
+    <%-include('./partials/_nav');%>
+    <div class=" w-50 py-5 m-auto col-md-7 col-lg-8">
+      <h4 class="mb-3">Register</h4>
+      </header>
+        <% errors.forEach(function(error) { %>
+          <div class="alert alert-danger" role="alert"><%= error.msg %></div>
+       <% }) %>
+      <form class="needs-validation" method="post" action="/users/register">
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label for="firstname" class="form-label">First name</label>
+            <input type="text" class="form-control" name="firstname" id="firstname" placeholder="First name" value="" required>
+            <div class="invalid-feedback">
+              Valid first name is required.
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <label for="lastname" class="form-label">Last name</label>
+            <input type="text" class="form-control" name="lastname" id="lastname" placeholder="last name" value="" required>
+            <div class="invalid-feedback">
+              Valid last name is required.
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label for="username" class="form-label">username</label>
+            <div class="input-group has-validation">
+              <input type="text" class="form-control" name="username" id="username" placeholder="username" required>
+            <div class="invalid-feedback">
+                Your username is required.
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label for="email" class="form-label">Email <span class="text-body-secondary">(Optional)</span></label>
+            <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com">
+            <div class="invalid-feedback">
+              Please enter a valid email address for shipping updates.
+            </div>
+          </div>
+          <div class="col-12">
+            <label for="password1" class="form-label">Password</label>
+            <div class="input-group has-validation">
+              <input type="password" class="form-control" name="password1" id="password1" placeholder="Password" required>
+            <div class="invalid-feedback">
+              Please enter a valid password.
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label for="password2" class="form-label">Confirm password</label>
+            <div class="input-group has-validation">
+              <input type="password" class="form-control" name="password2" id="password2" placeholder="Confirm Password" required>
+            <div class="invalid-feedback">
+              Please enter a valid password.
+              </div>
+            </div>
+            <hr class="my-4">
+          </div>
+          
+        <button class="w-100 btn btn-primary btn-lg" type="submit" value="Submit">Register</button>
+      </form>
+      <section>
+        <h2>***</h2>
+        <p>
+          ***
+        </p>
+      </section>
+      <%-include('./partials/_footer');%>
+    </div>
+  </body>
+</html>

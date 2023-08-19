@@ -1,0 +1,29 @@
+<%-include('./partials/_header');%>
+  <body>
+    <%-include('./partials/_nav');%>
+    <div class="container mt-2">
+      <header>
+        <% if(message.registered){ %>
+          <div class="alert alert-success" role="alert">
+              <%= message.registered %>
+          </div>
+          <% } %>
+          <% if(message.success){ %>
+            <div class="alert alert-success" role="alert">
+                <%= message.success %>
+            </div>
+            <% } %>
+        <h2>Welcome</h2>
+        <p>Here is the homepage for <%= page %></p>
+      </header>
+      <section>
+        <h2>Here is the body</h2>
+        <p>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Totam,
+          repellendus!
+        </p>
+      </section>
+      <%-include('./partials/_footer');%>
+    </div>
+  </body>
+</html>
