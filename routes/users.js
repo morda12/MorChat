@@ -3,7 +3,6 @@ const { body, validationResult } = require('express-validator');
 const router = express.Router();
 const passport = require('passport');
 const LocalStrategy = require('passport-local')
-const RememberMeStrategy = require('passport-remember-me')
 
 
 const mongoose = require('mongoose');
@@ -76,23 +75,6 @@ passport.use(new LocalStrategy((username, password, cb) => {
         });
     });
 }));
-
-passport.use(new RememberMeStrategy(
-    function(token, done) {
-      Token.consume(token, function (err, user) {
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        return done(null, user);
-      });
-    },
-    function(user, done) {
-      var token = utils.generateToken(64);
-      Token.save(token, { userId: user.id }, function(err) {
-        if (err) { return done(err); }
-        return done(null, token);
-      });
-    }
-  ));
 
 router.post('/register',
     body('firstname').notEmpty().isLength({ min: 2, max: 100 }).withMessage('invalid first name'),
