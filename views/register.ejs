@@ -4,7 +4,7 @@
     <div class=" w-50 py-5 m-auto col-md-7 col-lg-8">
       <h4 class="mb-3">Register</h4>
       </header>
-        <% errors.forEach(function(error) { %>
+        <% active.forEach(function(error) { %>
           <div class="alert alert-danger" role="alert"><%= error.msg %></div>
        <% }) %>
       <form class="needs-validation" method="post" action="/users/register">

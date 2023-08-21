@@ -21,6 +21,9 @@ const userSchema = new Schema({
     },
     lastname: {
         type: String
+    },
+    active_conversation: {
+        type: [Number]
     }
 })
 

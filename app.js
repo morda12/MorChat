@@ -4,6 +4,7 @@ dotenv.config();
 const express = require('express');
 const app = express();
 const http = require('http');
+const server = http.createServer(app);
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -12,6 +13,8 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const { query, validationResult , ExpressValidator, body } = require('express-validator');
 const mongoose = require('mongoose');
+const { Server } = require("socket.io");
+
 // const server = http.createServer(app); // TBD
 // const { Server } = require("socket.io"); // TBD
 // const io = new Server(server); // TBD
@@ -31,6 +34,24 @@ PORT = process.env.PORT;
 // set view
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+
+// set io
+const io = new Server(server);
+io.on('connection', (socket) => {
+  console.log('a user connected to chat');
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+
+    socket.on('send message'), (conversation, message) => {
+      i0.socket.emit('new message', {
+        conversation: conversation,
+        message: message
+      });
+    }
+  });
+});
 
 // middleware
 app.use(bodyParser.json());
@@ -60,7 +81,9 @@ app.use((req, res, next) =>{
 
 //
 app.get('*', (req, res, next) => {
+  console.log(req.user)
   res.locals.user = req.user || null;
+  // res.locals.active_conversation = req.user.active_conversation || null;
   next();
 })
 
@@ -69,7 +92,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${p
 moongoseConnectDB(uri);
 
 // start listening
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`listen on port : ${PORT}`);
   });
 

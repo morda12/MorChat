@@ -12,7 +12,6 @@ router.get('/register', (req, res, next) => {
     res.render('register', {
         page: 'register',
         subject: 'register',
-        name: 'TBD',
         errors: []
     });
 })
@@ -21,7 +20,6 @@ router.get('/login', (req, res, next) => {
     res.render('login', {
         page: 'login',
         subject: 'login',
-        name: 'TBD'
     });
 })
 
@@ -45,7 +43,7 @@ router.post('/login', passport.authenticate('local', {
 
 passport.serializeUser(function (user, cb) {
     process.nextTick(function () {
-        cb(null, { id: user.id, username: user.username });
+        cb(null, { id: user.id, username: user.username, active_conversation: user.active_conversation });
     });
 });
 passport.deserializeUser(function (user, cb) {
@@ -133,7 +131,6 @@ router.post('/register',
             res.render('register', {
                 page: 'register',
                 subject: 'register',
-                name: 'TBD',
                 errors: result.array()
             });
 

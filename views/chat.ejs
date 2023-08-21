@@ -1,19 +1,39 @@
 <%-include('./partials/_header');%>
+
   <body>
     <%-include('./partials/_nav');%>
-    <div class="container mt-2">
-      <header>
-        <h2>Welcome</h2>
-        <p>Here is the homepage for <%= page %></p>
-      </header>
-      <section>
-        <h2>Here is the body</h2>
-        <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Totam,
-          repellendus!
-        </p>
+      <div class="container mt-2">
+        <header class="p-4">
+
+        </header>
+        <section>
+          <%-include('./partials/_chat_box');%>
+          <div class="w-100 d-flex flex-row col-12 col-sm-7 col-md-12 p-0">
+            <input type="text" class="form-control" id="message" placeholder="write your message here">
+            <script src="/socketIo/socketIo.js"></script>
+            <script>
+              var socket = io();
+              var input = document.getElementById('input');
+
+              form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (input.value) {
+                  socket.emit('chat message', input.value);
+                  input.value = '';
+                }
+              });
+              
+            </script>
+            <div class="w-10"></div>
+            <button type="button" class="btn btn-primary">Send</button>
+          </div>
+            </div>
+      </div>
+      </div>
+      </div>
       </section>
       <%-include('./partials/_footer');%>
-    </div>
+        </div>
   </body>
-</html>
+
+  </html>
