@@ -1,14 +1,14 @@
-<div class="container-fluid" id="main-container">
-    <div class="row h-100">
+<div class="container-fluid" id="main-container" >
+    <div class="row h-100" >
         <div class="col-12 col-sm-5 col-md-4 d-flex flex-column" id="chat-list-area" style="position:relative;">
             
             <!-- Chat List -->
             <div class="d-flex flex-column w-100" id="profile-settings">
                 <div class="row d-flex flex-row align-items-center p-2 m-0"
-                    style="background:#000000; min-height:65px;">
+                    style="background-color:rgb(100, 164, 255); min-height:65px;">
                     <i class="fas fa-arrow-left p-2 mx-3 my-1 text-white" style="font-size: 1.5rem; cursor: pointer;"
                         onclick="hideProfileSettings()"></i>
-                    <div class="text-white font-weight-bold">
+                    <div class="text-black font-weight-bold">
                         <%= username %>
                     </div>
                 </div>
@@ -17,9 +17,9 @@
                 </div>
 
             </div>
-            <div class="d-flex flex-column w-100" style="height: 500px; overflow:auto;">
+            <div class="d-flex flex-column w-100" style="height: 500px; overflow:auto; ">
                 <% active_conversation.forEach(function(conv) { %>
-                    <button type="button" class="btn btn-light">
+                    <button type="button" class="btn btn-light " style="background: rgb(209, 223, 242);" >
                         <%= conv %>
                     </button>
                     <% }) %>
@@ -28,15 +28,14 @@
 
         <!-- Message Area -->
         <div class="col">
-        <div class="d-none d-sm-flex flex-column col-12 col-sm-7 col-md-12 p-0 h-80" id="message-area" style="background-color:rgb(255, 245, 240);">
-            <div class="d-flex flex-column w-100 h-10 bg-purple rounded shadow-sm "
-                style="height: 500px; overflow:auto;">
+        <div class="d-none d-sm-flex flex-column col-12 col-sm-7 col-md-12 p-0 h-80" id="message-area" style="background-color:rgb(209, 223, 242);">
+            <div class=" d-flex flex-column w-100 h-10 rounded shadow-sm " style="height: 500px; overflow:auto; width: 100%;">
                 <% active_conversation.forEach(function(conv) { %>
-                    <h1 class="h6  text-yellow">
+                    <p class=" <% if(conv%2 === 0) { %> text-right<% } else { %>text-left <% } %>" style="padding-inline: 10%;" >
                         <%= conv %>
-                    </h1>
+                    </p>
                     <% }) %>
             </div>
         </div>
-    <!-- </div> -->
-<!-- </div> -->
+
+                <!-- add new chat -->

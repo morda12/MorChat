@@ -81,9 +81,8 @@ app.use((req, res, next) =>{
 
 //
 app.get('*', (req, res, next) => {
-  console.log(req.user)
+  // console.log(req.user)
   res.locals.user = req.user || null;
-  // res.locals.active_conversation = req.user.active_conversation || null;
   next();
 })
 

@@ -43,7 +43,11 @@ router.post('/login', passport.authenticate('local', {
 
 passport.serializeUser(function (user, cb) {
     process.nextTick(function () {
-        cb(null, { id: user.id, username: user.username, active_conversation: user.active_conversation });
+        cb(null, {
+             id: user.id,
+            username: user.username,
+            active_conversation: user.active_conversation
+        });
     });
 });
 passport.deserializeUser(function (user, cb) {

@@ -27,7 +27,27 @@
             <div class="w-10"></div>
             <button type="button" class="btn btn-primary">Send</button>
           </div>
+
+          
+          <form class="needs-validation w-100 mt-2" method="post" action="/chat/newDialogue">
+
+            <div class=" w-50 py-5 m-auto col-md-7 col-lg-8">
+            <div class="row g-3">
+              <div class="col-12">
+                <h4 class="text-center">Add new friend</h4>
+              <div class="input-group has-validation">
+                <input type="text" class="form-control" id="friendUsername" name="friendUsername" placeholder="friend's username"  required autofocus>
+                <div class="invalid-feedback">
+                  Your username is required.
+                </div>
+              </div>
             </div>
+            </div>
+            <button class="w-100 btn btn-primary btn-lg my-3" type="submit">create connection</button>
+          </form>
+
+
+        </div>
       </div>
       </div>
       </div>
