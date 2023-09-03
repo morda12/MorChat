@@ -24,6 +24,10 @@ const conversationSchema = new Schema({
         type: String,
         require: true
     },
+    conv_friends: {
+        type: [String],
+        require: true
+    },
     conv_type: {
         type: String,
         default: "dialogue"
@@ -38,7 +42,7 @@ createConversation = async function (conv, cb) {
     // find the next conversation_ID
     await Conversation.findOne({}).sort({conv_id: -1})
         .then(async (res) => {
-            new_conv_id = res.conv_id + 1;
+            const new_conv_id = res.conv_id + 1;
             conv.conv_id = new_conv_id;
             // create new conversation
             await Conversation.create(conv)
@@ -59,4 +63,20 @@ deleteConversation = function (conv) {
     Conversation.deleteOne({conv_id: conv}).exec();
 }
 
-module.exports = { Conversation, createConversation, deleteConversation};
+sortConversationsByLastUpdated = async function (ID_list) {
+    return new Promise(async (resolve, reject) => {
+        await Conversation.find({ conv_id: { $in: ID_list } }, 'conv_id').sort('conv_text.updatedAt').exec()
+        .then((convs) =>{
+            let newID_list=[]
+            for (const conv of convs) {
+                newID_list.push(conv.conv_id)
+              }
+            resolve(newID_list, null);
+        })
+        .catch((res) =>{
+            reject(null,res);
+        })
+    })
+}
+
+module.exports = { Conversation, createConversation, deleteConversation, sortConversationsByLastUpdated};

@@ -11,15 +11,9 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const flash = require('connect-flash');
-const { query, validationResult , ExpressValidator, body } = require('express-validator');
+// const { query, validationResult, ExpressValidator, body } = require('express-validator');
 const mongoose = require('mongoose');
 const { Server } = require("socket.io");
-
-// const server = http.createServer(app); // TBD
-// const { Server } = require("socket.io"); // TBD
-// const io = new Server(server); // TBD
-// const ejs = require('ejs'); // TBD
-// const {MongoClient} = require('mongodb') // TBD
 
 const routes = require('./routes/index');
 const users = require('./routes/users');
@@ -35,53 +29,73 @@ PORT = process.env.PORT;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-
-// set io
-const io = new Server(server);
-io.on('connection', (socket) => {
-  console.log('a user connected to chat');
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-
-    socket.on('send message'), (conversation, message) => {
-      i0.socket.emit('new message', {
-        conversation: conversation,
-        message: message
-      });
-    }
-  });
-});
-
 // middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.json());
 
+// set socket.io
+const io = new Server(server, {
+  allowRequest: (req, cb) => {
+    cb(null, false)
+  }
+});
+
 // handle session
-app.use(session({
-  secret: 'secret',
+sessionMiddleware = session({
+  secret: process.env.secret,
   saveUninitialized: true,
   resave: true
-}))
+});
+
+app.use(sessionMiddleware)
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+io.use(wrap(sessionMiddleware));
+
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
+// io.on('connection', (socket) => {
+//   console.log('conection');
+//   socket.on('chat message', (msg) => {
+//     console.log('chat message');
+//     io.emit('chat message', msg);
+//   });
+// });
 
 // passport
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.authenticate('session'));
 
+// socket.io middleware
+io.use((socket, next) => {
+  const session = socket.request.session;
+  if (session && session.authenticated) {
+    next();
+  } else {
+    next(new Error("unauthorized"));
+  }
+});
+
+
+// pass socket.io to app
+app.use((req, res, next) => {
+  req.io = io;
+  return next();
+})
 
 //flash
 app.use(flash());
-app.use((req, res, next) =>{
+app.use((req, res, next) => {
   res.locals.message = req.flash();
   next();
 });
 
 //
 app.get('*', (req, res, next) => {
-  // console.log(req.user)
   res.locals.user = req.user || null;
   next();
 })
@@ -93,7 +107,7 @@ moongoseConnectDB(uri);
 // start listening
 server.listen(PORT, () => {
   console.log(`listen on port : ${PORT}`);
-  });
+});
 
 // route
 app.use('/', routes);
