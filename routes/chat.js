@@ -8,14 +8,6 @@ const flash = require('flash');
 
 router.get('/', ensureAuthehenticated, (req, res, next) => {
 
-    // console.log(req.socket)
-
-    // res.render('chat', {
-    //     page: 'chat',
-    //     subject: 'chat',
-    //     username: req.user.username,
-    //     active_conversation: []
-    // });
     getUserActiveConversation(req.user.username)
     .then((active_conversation) =>{
         sortConversations(active_conversation)

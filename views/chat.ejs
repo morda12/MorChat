@@ -10,8 +10,8 @@
           <%-include('./partials/_chat_box');%>
 
           <form id="form" class="w-100 d-flex flex-row col-12 col-sm-7 col-md-12 p-0" action="">
-            <input type="text" class="form-control" id="input" placeholder="write your message here" autocomplete="off">
-            <button type="button" class="btn btn-primary">Send</button>
+            <input id="input" type="text" class="form-control" id="input" placeholder="write your message here" autocomplete="off">
+            <button type="submit" class="btn btn-primary">Send</button>
           </form>
 
           
@@ -43,26 +43,63 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
           var socket = io();
-        
+        console.log(socket)
           var messages = document.getElementById('messages');
           var form = document.getElementById('form');
           var input = document.getElementById('input');
-        console.log(messages, form, input)
+          var header = document.getElementById("conversations");
+          var btns = header.getElementsByClassName("btn btn-light");
+          var friendHeader = document.getElementById("friend header")
+
           form.addEventListener('submit', function(e) {
             e.preventDefault();
             if (input.value) {
+              console.log(input.value)
+              // console.log('messages: ', messages)
               socket.emit('chat message', input.value);
               input.value = '';
             }
           });
-        
-          socket.on('chat message', function(msg) {
-            var item = document.createElement('li');
-            item.textContent = msg;
+          socket.on('chat message', function(data){
+            var item = document.createElement('p');
+            item.textContent = 'writer: ' + data.user + ' ,   message: ' + data.msg;
             messages.appendChild(item);
-            window.scrollTo(0, document.body.scrollHeight);
+            messages.scrollTop = messages.scrollHeight;
           });
-        </script> 
+          // var btn_id = null
+          // function selectConv(id){
+          //   socket.emit('active conv', id);
+          //   if(btn_id){
+          //     btn.id = btn.btn_id.style.backgroundColor=rgb(209, 223, 242);
+          //   }
+          //   btn_id = document.getElementById(id).style.backgroundColor="red";
+          // }
+
+
+          for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener("click", function() {
+              for (var j = 0; j < btns.length; j++) {
+                btns[j].dataset.active = "inactive";
+              }
+              if (this.dataset.active == "active") {
+                this.dataset.active = "inactive";
+              } else {
+                this.dataset.active = "active";
+                friendHeader.textContent = this.textContent;
+                messages.innerHTML = '';
+                console.log('click')
+                socket.emit('active conv', this.id);
+              }
+            })
+          }
+
+          // socket.on('chat message', function(msg) {
+          //   var item = document.createElement('li');
+          //   item.textContent = msg;
+          //   messages.appendChild(item);
+          //   window.scrollTo(0, document.body.scrollHeight);
+          // });
+        </script>
   </body>
 
   </html>

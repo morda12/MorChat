@@ -79,4 +79,27 @@ sortConversationsByLastUpdated = async function (ID_list) {
     })
 }
 
-module.exports = { Conversation, createConversation, deleteConversation, sortConversationsByLastUpdated};
+getEndOfConversation = async function (Conv_ID){
+    return new Promise(async (resolve, reject) => {
+        await Conversation.findOne({ conv_id: Conv_ID }, 'conv_text').sort('conv_text.updatedAt').limit(4).exec()
+        .then((conv) => {
+            resolve(conv.conv_text);
+        })
+        .catch((err) =>{
+            reject(err)
+        })
+    })
+}
+//   message = {
+//     user: username, 
+//     msg: msg
+//   }
+addMessageToConversation = async function (Conv_ID, message){
+    return new Promise(async (resolve, reject) => {
+        await Conversation.updateOne({ conv_id: Conv_ID }, {$push: { conv_text: { writer: message.user, text: message.msg } } } )
+        .then(() => resolve())
+        .catch((err) =>{reject(err)})
+    })
+}
+
+module.exports = { Conversation, createConversation, deleteConversation, sortConversationsByLastUpdated, getEndOfConversation, addMessageToConversation};

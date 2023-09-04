@@ -36,11 +36,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // set socket.io
-const io = new Server(server, {
-  allowRequest: (req, cb) => {
-    cb(null, false)
-  }
-});
+const io = new Server(server);
 
 // handle session
 sessionMiddleware = session({
@@ -49,20 +45,14 @@ sessionMiddleware = session({
   resave: true
 });
 
-app.use(sessionMiddleware)
-const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
-io.use(wrap(sessionMiddleware));
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
-});
+app.use(sessionMiddleware)
+
+
 
 // io.on('connection', (socket) => {
 //   console.log('conection');
-//   socket.on('chat message', (msg) => {
-//     console.log('chat message');
-//     io.emit('chat message', msg);
-//   });
+//  
 // });
 
 // passport
@@ -71,14 +61,31 @@ app.use(passport.session());
 app.use(passport.authenticate('session'));
 
 // socket.io middleware
+
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+
+// io.use((socket, next) => {
+//   const session = socket.request.session;
+//   if (session && session.authenticated) {
+//     next();
+//   } else {
+//     next(new Error("unauthorized"));
+//   }
+// });
+
+io.use(wrap(sessionMiddleware));
+io.use(wrap(passport.initialize()));
+io.use(wrap(passport.session()));
+
 io.use((socket, next) => {
-  const session = socket.request.session;
-  if (session && session.authenticated) {
+  if (socket.request.isAuthenticated()) {
     next();
   } else {
-    next(new Error("unauthorized"));
+    next(new Error('unauthorized'))
   }
 });
+
+require('./models/io.js')(io);
 
 
 // pass socket.io to app
