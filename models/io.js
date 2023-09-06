@@ -6,7 +6,6 @@ module.exports = function (io) {
     checkUserIsLogin(socket) // Check that the user is logged in
       .then((username) => {
         socket.on('active conv', (conv_friend) => { // new listener 'active conv' (The conversation the user is currently viewing)
-          console.log(conv_friend)
           getUserActiveConversation(username) // get the updated list of User Conversations
             .then((activeConv) => {
               const convID = activeConv.find((conv) => String(conv.partner) === conv_friend).conv_ID;
