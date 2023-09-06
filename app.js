@@ -38,7 +38,7 @@ const io = new Server(server);
 
 // handle session
 sessionMiddleware = session({
-  secret: process.env.secret,
+  secret: process.env.SECRET_KEY,
   saveUninitialized: true,
   resave: true
 });
