@@ -10,8 +10,6 @@ const chatSchema = new Schema({
         type: String,
         require: true
     }
-}, {
-    time_stamp: true
 })
 
 const conversationSchema = new Schema({
@@ -33,70 +31,65 @@ const conversationSchema = new Schema({
         default: "dialogue"
     },
     conv_text: [chatSchema]
+}, {
+    timestamps: true
 })
 
 const Conversation = model('Conversation', conversationSchema);
 
-// create new conversation in DB
-createConversation = async function (conv, cb) {
-    // find the next conversation_ID
-    await Conversation.findOne({}).sort({conv_id: -1})
-        .then(async (res) => {
+// Create new conversation in DB
+createConversation = function (conv) {
+    return new Promise((resolve, reject) => {
+        Conversation.findOne({}).sort({conv_id: -1}) // find the next conversation_ID
+        .then((res) => {
             const new_conv_id = res.conv_id + 1;
             conv.conv_id = new_conv_id;
-            // create new conversation
-            await Conversation.create(conv)
-            .then((res)=>{})
-            .catch((err) => {
-                console.log(err)
-                return(null)
-            });
-            cb(new_conv_id)  // TBD - this line need to move up inside ".then"
+            Conversation.create(conv) // create new conversation
+            .then((res)=>{ resolve(new_conv_id) })
+            .catch((err) => { reject(err) });
         })
-        .catch((err) => {
-            return(null)
-        })
+        .catch((err) => { reject(err) })
+    })
 }
-
+// Delete the conversation from the DB
 deleteConversation = function (conv) {
-    console.log(conv)
     Conversation.deleteOne({conv_id: conv}).exec();
 }
 
-sortConversationsByLastUpdated = async function (ID_list) {
-    return new Promise(async (resolve, reject) => {
-        await Conversation.find({ conv_id: { $in: ID_list } }, 'conv_id').sort('conv_text.updatedAt').exec()
+// Sort conversations from ID list by lastUpdated
+sortConversationsByLastUpdated = function (ID_list) {
+    return new Promise((resolve, reject) => {
+        Conversation.find({ conv_id: { $in: ID_list } }, 'conv_id').sort({'updatedAt': -1}).exec()
         .then((convs) =>{
-            let newID_list=[]
+            let newID_list=[];
             for (const conv of convs) {
                 newID_list.push(conv.conv_id)
               }
             resolve(newID_list, null);
         })
-        .catch((res) =>{
-            reject(null,res);
-        })
+        .catch((res) =>{ reject(null,res) })
     })
 }
 
-getEndOfConversation = async function (Conv_ID){
-    return new Promise(async (resolve, reject) => {
-        await Conversation.findOne({ conv_id: Conv_ID }, 'conv_text').sort('conv_text.updatedAt').limit(4).exec()
+// Get the last 12 messgase from a conversations
+getEndOfConversation = function (Conv_ID){
+    return new Promise((resolve, reject) => {
+        Conversation.findOne({ conv_id: Conv_ID }, 'conv_text').sort('conv_text.updatedAt').exec()
         .then((conv) => {
-            resolve(conv.conv_text);
+            const text = conv.conv_text;
+            if(text.length > 12){
+                resolve(text.slice(text.length-12));
+            }
+            else{ resolve(text) }
         })
-        .catch((err) =>{
-            reject(err)
-        })
+        .catch((err) => { reject(err) })
     })
 }
-//   message = {
-//     user: username, 
-//     msg: msg
-//   }
-addMessageToConversation = async function (Conv_ID, message){
-    return new Promise(async (resolve, reject) => {
-        await Conversation.updateOne({ conv_id: Conv_ID }, {$push: { conv_text: { writer: message.user, text: message.msg } } } )
+
+// Push new message to a conversation
+addMessageToConversation = function (Conv_ID, message){
+    return new Promise((resolve, reject) => {
+        Conversation.updateOne({ conv_id: Conv_ID }, {$push: { conv_text: { writer: message.user, text: message.msg } } } )
         .then(() => resolve())
         .catch((err) =>{reject(err)})
     })

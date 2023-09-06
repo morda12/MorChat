@@ -8,28 +8,13 @@ const LocalStrategy = require('passport-local')
 const mongoose = require('mongoose');
 const { User, createUser, findUserbyUsername, comparePasswords } = require('../models/user.js');
 
-router.get('/register', (req, res, next) => {
-    res.render('register', {
-        page: 'register',
-        subject: 'register',
-        errors: []
-    });
-})
-
+/* login */
 router.get('/login', (req, res, next) => {
     res.render('login', {
         page: 'login',
         subject: 'login',
     });
 })
-
-router.get('/logout', (req, res, next) => {
-    req.logout((err) => {
-        if (err) { return next(err); }
-        req.flash('success', 'You are now logged out');
-        res.redirect('/');
-    });
-});
 
 router.post('/login', passport.authenticate('local', {
     failureRedirect: "/users/login",
@@ -41,27 +26,28 @@ router.post('/login', passport.authenticate('local', {
         res.redirect("/");
     });
 
+// Authentication was successful
 passport.serializeUser(function (user, cb) {
     process.nextTick(function () {
         cb(null, {
-             id: user.id,
+            id: user.id,
             username: user.username,
             active_conversation: user.active_conversation
         });
     });
 });
-passport.deserializeUser(function (user, cb) {
+
+// Authentication failed
+passport.deserializeUser(function (user, cb) { 
     process.nextTick(function () {
         return cb(null, user);
     });
 });
 
-passport.use(new LocalStrategy((username, password, cb) => {
-
+passport.use(new LocalStrategy((username, password, cb) => { 
     const incorrectMessage = 'Incorrect username or password'
     findUserbyUsername(username, (err, user) => {
         if (err) {
-            console.log(err);
             return cb(incorrectMessage);
         }
         if (!user) {
@@ -78,10 +64,28 @@ passport.use(new LocalStrategy((username, password, cb) => {
     });
 }));
 
+/* logout */
+router.get('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) { return next(err); }
+        req.flash('success', 'You are now logged out');
+        res.redirect('/');
+    });
+});
+
+/* regiser */
+router.get('/register', (req, res, next) => {
+    res.render('register', {
+        page: 'register',
+        subject: 'register',
+        errors: []
+    });
+})
+
 router.post('/register',
     body('firstname').notEmpty().isLength({ min: 2, max: 100 }).withMessage('invalid first name'),
     body('lastname').notEmpty().isLength({ min: 2, max: 100 }).withMessage('invalid last name'),
-    body('username').notEmpty().isLength({ min: 4, max: 20 }).withMessage('invalid username : 4 to 20 characters'),
+    body('username').notEmpty().isLength({ min: 4, max: 18 }).withMessage('invalid username : 4 to 18 characters'),
     body('email').notEmpty().isEmail().withMessage('invalid Email'),
     body('password1').notEmpty().isLength({ max: 20 }).isStrongPassword({
         minLength: 8,
@@ -106,19 +110,9 @@ router.post('/register',
         }
         return true
     })
-
     , async (req, res, next) => {
         const result = validationResult(req);
         if (result.isEmpty()) {         // all fields of registretion are valid
-
-            // const newUser = await User.create({
-            //     firstname: req.body.firstname,
-            //     lastname: req.body.lastname,
-            //     username: req.body.username,
-            //     email: req.body.email,
-            //     password: req.body.password1
-            // })
-
             createUser({
                 firstname: req.body.firstname,
                 lastname: req.body.lastname,
@@ -126,7 +120,6 @@ router.post('/register',
                 email: req.body.email,
                 password: req.body.password1
             })
-
             console.log(`create new user: ${req.body.username}`)
             res.location('/');
             req.flash('registered', `walcome ${req.body.username}, you are now registered`);

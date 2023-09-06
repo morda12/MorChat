@@ -41,6 +41,7 @@ const userSchema = new Schema({
 
 const User = model('User', userSchema);
 
+// Create new user in db
 createUser = (newUser) => {
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, async (err, hash) => {
@@ -50,67 +51,50 @@ createUser = (newUser) => {
     });
 };
 
-findUserbyUsername = async function (username, callback) {
+// Find one user by is unique username
+findUserbyUsername = function (username, callback) {
     const query = { username: username };
-    await User.findOne(query).exec()
+    User.findOne(query).exec()
         .then((user) => callback(false, user))
         .catch((err) => callback(err, null))
 }
-
+// Compare between password to hash password
 comparePasswords = function (candidatePassword, hash, callback) {
     bcrypt.compare(candidatePassword, hash, (err, isMatch) => {
         callback(null, isMatch)
     });
 }
 
-// create DB connection between users to chat conversation
-connectUsersToConversation = async function (usersName, conversation_ID) {
-    return new Promise(async (resolve, reject) => {
-        usersExist(usersName)
+// Create DB connection between users to chat conversation
+connectUsersToConversation = function (usersName, conversation_ID) {
+    return new Promise((resolve, reject) => {
+        usersExist(usersName) // Check existence of the users
             .then(() => {
-                usersAlreadyChat(usersName)
+                usersAlreadyChat(usersName) // Check if the users are already linked in another conversation
                     .then(() => {
-                        updateUsersActiceConversation(usersName, conversation_ID)
-                            .then(() => {
-                                console.log('succsess');
-                                resolve(conversation_ID);
-                            })
-                            .catch(() => {
-                                console.log('err in : updateUsersActiceConversation');
-                                reject(conversation_ID);
-                            })
+                        updateUsersActiceConversation(usersName, conversation_ID) // Create the connection of the users to the conversation
+                            .then(() => { resolve(conversation_ID) })
+                            .catch(() => { reject(conversation_ID) })
                     })
-                    .catch(() => {
-                        console.log('err in : usersAlreadyChat');
-                        reject(conversation_ID);
-                    })
+                    .catch(() => { reject(conversation_ID) })
             })
-            .catch(() => {
-                console.log('err in : usersExist');
-                reject(conversation_ID);
-            })
+            .catch(() => { reject(conversation_ID) })
     })
 }
 
-// check if all users exist
-usersExist = async function (usersName) {
-    return new Promise(async (resolve, reject) => {
-        await User.find({ username: { $in: usersName } }).count()
-            .then(async (count) => {
-                if (count === usersName.length) {
-                    resolve()
-                }
-                else {
-                    reject()
-                }
+// Check existence of the users
+usersExist = function (usersName) {
+    return new Promise((resolve, reject) => {
+        User.find({ username: { $in: usersName } }).count()
+            .then((count) => {
+                if (count === usersName.length) { resolve() }
+                else { reject() }
             })
-            .catch((count) => {
-                reject()
-            })
+            .catch((err) => { reject(err) })
     })
 }
 
-// check if users already friends
+// Check if the users are already linked in another conversation
 usersAlreadyChat = async function (usersName) {
     return new Promise(async (resolve, reject) => {
         await User.find({ username: { $in: usersName } })
@@ -121,51 +105,38 @@ usersAlreadyChat = async function (usersName) {
                         users_conv_IDs.push(conv.conv_ID)
                     })
                 });
-                if (users_conv_IDs.length === new Set(users_conv_IDs).size) {
-                    resolve()
-                }
-                else {
-                    reject()
-                }
+                if (users_conv_IDs.length === new Set(users_conv_IDs).size) { resolve() }
+                else { reject() }
             })
-            .catch((user) => {
-                reject()
-            })
+            .catch((user) => { reject() })
     })
 }
 
-
+// Create the connection of the users to the conversation
 updateUsersActiceConversation = async function (usersName, conversation_ID) {
     return new Promise(async (resolve, reject) => {
         const bulk = await updateUsersActiceConversationBulk(usersName, conversation_ID)
-        console.log(bulk)
         await User.bulkWrite(bulk)
             .then((result) => {
-                if(result.matchedCount===usersName.length){
-                    resolve()
-                }
-                else{
-                    reject()
-                }
+                if(result.matchedCount===usersName.length){ resolve() }
+                else{ reject() }
             })
-            .catch((err) => {
-                console.log('err: ', err)
-                reject()
-            })
+            .catch((err) => { reject() })
     })
 }
 
 
 // get the updated list of User Conversations
 async function getUserActiveConversation(username) {
-    return new Promise(async (resolve, reject) => {
-        await User.findOne({ username: username })
+    return new Promise((resolve, reject) => {
+        User.findOne({ username: username })
             .then((user) => {
                 resolve(user.active_conversation)
             })
     })
 }
 
+// Creating a bulk to update connection of users to the conversation
 updateUsersActiceConversationBulk = function (usersName, conversation_ID) {
     let bulk =[{
         updateOne: {

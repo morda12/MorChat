@@ -43,38 +43,60 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
           var socket = io();
-        console.log(socket)
           var messages = document.getElementById('messages');
           var form = document.getElementById('form');
           var input = document.getElementById('input');
           var header = document.getElementById("conversations");
           var btns = header.getElementsByClassName("btn btn-light");
           var friendHeader = document.getElementById("friend header")
+          var username = document.getElementById("username").innerText
 
           form.addEventListener('submit', function(e) {
             e.preventDefault();
             if (input.value) {
-              console.log(input.value)
-              // console.log('messages: ', messages)
               socket.emit('chat message', input.value);
               input.value = '';
             }
           });
-          socket.on('chat message', function(data){
-            var item = document.createElement('p');
-            item.textContent = 'writer: ' + data.user + ' ,   message: ' + data.msg;
-            messages.appendChild(item);
-            messages.scrollTop = messages.scrollHeight;
-          });
-          // var btn_id = null
-          // function selectConv(id){
-          //   socket.emit('active conv', id);
-          //   if(btn_id){
-          //     btn.id = btn.btn_id.style.backgroundColor=rgb(209, 223, 242);
-          //   }
-          //   btn_id = document.getElementById(id).style.backgroundColor="red";
-          // }
 
+          socket.on('chat message', function(data){
+          var messages = document.getElementById('messages');
+          var d1 = document.createElement('div');
+          var writer = document.createElement('p');
+          var d2 = document.createElement('div');
+          var d3 = document.createElement('div');
+          var text = document.createElement('p');
+
+
+
+          writer.textContent = data.user
+          d1.id = 'writer: ' + data.user
+
+          d3.className = 'rounded-3'
+          text.textContent = data.msg;
+          writer.style.paddingInline = '15px'
+          if (data.user === username){
+            d1.className = 'd-flex justify-content-start'
+            writer.className = 'justify-content-start'
+
+            d2.className = 'mb-3 d-flex flex-row justify-content-start'
+            text.className = 'p-2 rounded-3'
+            text.style.backgroundColor = '#f5f6f7'
+          }
+          else{
+            d1.className = 'd-flex justify-content-end'
+            writer.className = 'justify-content-end'
+            d2.className = 'mb-3  d-flex flex-row justify-content-end '
+            text.className = 'p-2 text-white rounded-3'
+            text.style.backgroundColor = 'rgb(100, 164, 255)'
+          }
+          d1.appendChild(writer)
+          d3.appendChild(text)
+          d2.appendChild(d3)
+          messages.appendChild(d1)
+          messages.appendChild(d2)
+          messages.scrollTop = messages.scrollHeight;
+          });
 
           for (var i = 0; i < btns.length; i++) {
             btns[i].addEventListener("click", function() {
@@ -87,7 +109,6 @@
                 this.dataset.active = "active";
                 friendHeader.textContent = this.textContent;
                 messages.innerHTML = '';
-                console.log('click')
                 socket.emit('active conv', this.id);
               }
             })

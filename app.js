@@ -1,4 +1,3 @@
-
 const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
@@ -11,7 +10,6 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const flash = require('connect-flash');
-// const { query, validationResult, ExpressValidator, body } = require('express-validator');
 const mongoose = require('mongoose');
 const { Server } = require("socket.io");
 
@@ -45,15 +43,7 @@ sessionMiddleware = session({
   resave: true
 });
 
-
 app.use(sessionMiddleware)
-
-
-
-// io.on('connection', (socket) => {
-//   console.log('conection');
-//  
-// });
 
 // passport
 app.use(passport.initialize());
@@ -63,16 +53,6 @@ app.use(passport.authenticate('session'));
 // socket.io middleware
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
-
-// io.use((socket, next) => {
-//   const session = socket.request.session;
-//   if (session && session.authenticated) {
-//     next();
-//   } else {
-//     next(new Error("unauthorized"));
-//   }
-// });
-
 io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));
