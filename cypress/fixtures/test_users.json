@@ -1,0 +1,173 @@
+{
+    "chat_test_users": [
+        {
+            "first-name": "testAf",
+            "last-name": "testAl",
+            "username": "testAu",
+            "email": "testA@testmail.com",
+            "password": "aA123456%$"
+        },
+        {
+            "first-name": "testBf",
+            "last-name": "testBl",
+            "username": "testBu",
+            "email": "testB@testmail.com",
+            "password": "aA123457%$"
+        },
+        {
+            "first-name": "testCf",
+            "last-name": "testCl",
+            "username": "testCu",
+            "email": "testC@testmail.com",
+            "password": "aA123458%$"
+        }
+    ],
+    "register_good_input": [
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "cccc",
+            "email": "aaa@bbb.com",
+            "password1": "aA123456%$",
+            "password2": "aA123456%$",
+            "wrong-field": "email",
+            "explain": "'email' already exist in the system",
+            "error-message": "Email already registered in the system"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcefg",
+            "email": "abcd@notmymail.com",
+            "password1": "aA123456%$",
+            "password2": "aA123456%$",
+            "good-input": "false",
+            "wrong-field": "",
+            "explain": "correct",
+            "error-message": ""
+        }
+    ],
+    "register_bad_input": [
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "cccc",
+            "email": "abcd@notmymail.com",
+            "password1": "aA123456%$",
+            "password2": "aA123456%$",
+            "wrong-field": "username",
+            "explain": "'username' already exist in the system",
+            "error-message": "This username is already in use, please choose another username"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcdefgh01234567890123456789",
+            "email": "abcd@notmymail.com",
+            "password1": "aA123456%$",
+            "password2": "aA123456%$",
+            "wrong-field": "username",
+            "explain": "too long 'username'",
+            "error-message": "invalid username : 4 to 18 characters"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcefg",
+            "email": "abcd@notmymail",
+            "password1": "aA123456%$",
+            "password2": "aA123456%$",
+            "wrong-field": "email",
+            "explain": "not an email",
+            "error-message": "invalid Email"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcefg",
+            "email": "aaa@bbb.com",
+            "password1": "aA123456%$",
+            "password2": "aA123456%$",
+            "wrong-field": "email",
+            "explain": "'email' already exist in the system",
+            "error-message": "Email already registered in the system"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcefg",
+            "email": "abcd@notmymail.com",
+            "password1": "aA1%$",
+            "password2": "aA1%$",
+            "wrong-field": "password",
+            "explain": "too short 'password'",
+            "error-message": "invalid password: please use 8 to 20 characters, at least 1 number, at least 1 symbol"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcefg",
+            "email": "abcd@notmymail.com",
+            "password1": "aA01234567890123456%$",
+            "password2": "aA01234567890123456%$",
+            "wrong-field": "password",
+            "explain": "too long 'password'",
+            "error-message": "invalid password: please use 8 to 20 characters, at least 1 number, at least 1 symbol"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcefg",
+            "email": "abcd@notmymail.com",
+            "password1": "aABCDEFGH%$",
+            "password2": "aABCDEFGH%$",
+            "wrong-field": "password",
+            "explain": "no numbers includ in 'password'",
+            "error-message": "invalid password: please use 8 to 20 characters, at least 1 number, at least 1 symbol"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcefg",
+            "email": "abcd@notmymail.com",
+            "password1": "aA12345678",
+            "password2": "aA12345678",
+            "wrong-field": "password",
+            "explain": "no symbols includ in 'password'",
+            "error-message": "invalid password: please use 8 to 20 characters, at least 1 number, at least 1 symbol"
+        },
+        {
+            "first-name": "abcd",
+            "last-name": "efgh",
+            "username": "abcefg",
+            "email": "abcd@notmymail.com",
+            "password1": "aA123456%$",
+            "password2": "aA123457%$",
+            "wrong-field": "confirm password",
+            "explain": "'password' and 'confirm password' are diffrent",
+            "error-message": "passwords are not equals"
+        }
+    ],
+    "login_good_input": {
+        "username": "abcefg",
+        "password": "aA123456%$",
+        "explain": "correct",
+        "error-message": ""
+    },
+    "login_bad_input": [
+        {
+            "username": "test0abcefg",
+            "password": "aA123456%$",
+            "wrong-field": "username",
+            "explain": "user not exist",
+            "error-message": "Incorrect username or password"
+        },
+        {
+            "username": "abcefg",
+            "password": "0aA123456%$",
+            "wrong-field": "password",
+            "explain": "incorrect password",
+            "error-message": "Incorrect username or password"
+        }
+    ]
+}

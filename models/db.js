@@ -1,15 +1,19 @@
 const mongoose = require("mongoose");
 
-// connect MongoDB
-function moongoseConnectDB(uri) {
+function getUri(user, password, url){
+  return `mongodb+srv://${user}:${password}@${url}/?retryWrites=true&w=majority`
+}
 
-    mongoose.connection.on("connecting", () => {
-        console.log('DB connecting...');
-      });
-      mongoose.connection.on("connected", () => {
-        console.log('DB successfully connected');
-      });
-      mongoose.connect(uri);
+// connect MongoDB
+function moongoseConnectDB() {
+  const uri = getUri(process.env.DB_USER, process.env.DB_PASSWORD, process.env.DB_URL)
+  mongoose.connection.on("connecting", () => {
+    console.log('DB connecting...');
+  });
+  mongoose.connection.on("connected", () => {
+    console.log('DB successfully connected');
+  });
+  mongoose.connect(uri);
 }
 
 module.exports = moongoseConnectDB;

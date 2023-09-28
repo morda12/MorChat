@@ -1,7 +1,7 @@
 const { getUserActiveConversation } = require('./user.js')
 const { getEndOfConversation, addMessageToConversation } = require('./chat.js');
 
-module.exports = function (io) {
+function ioHandler(io) {
   io.on('connection', (socket) => {
     checkUserIsLogin(socket) // Check that the user is logged in
       .then((username) => {
@@ -24,10 +24,8 @@ module.exports = function (io) {
                       })
                       .catch((err) => { })
                   })
-
                 })
             })
-
         })
       })
   })
@@ -79,3 +77,13 @@ function emitConversationHistory(io, socket, conv) {
     });
   }
 }
+
+ioAuthorization = (socket, next) => {
+  if (socket.request.isAuthenticated()) {
+    next();
+  } else {
+    next(new Error('unauthorized'))
+  }
+}
+
+module.exports = {ioHandler , ioAuthorization}

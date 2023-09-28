@@ -3,17 +3,20 @@ const { body, validationResult } = require('express-validator');
 const router = express.Router();
 const passport = require('passport');
 const LocalStrategy = require('passport-local')
-
-
 const mongoose = require('mongoose');
-const { User, createUser, findUserbyUsername, comparePasswords } = require('../models/user.js');
+const { User, createUser } = require('../models/user.js');
 
 /* login */
 router.get('/login', (req, res, next) => {
-    res.render('login', {
-        page: 'login',
-        subject: 'login',
-    });
+    if(req.isAuthenticated()){
+        res.redirect("/")
+    } else{
+        res.render('login', {
+            page: 'login',
+            title: 'login',
+        });
+    }
+
 })
 
 router.post('/login', passport.authenticate('local', {
@@ -22,47 +25,10 @@ router.post('/login', passport.authenticate('local', {
 }),
     (req, res) => {
         res.location('/');
-        req.flash("success", "You are log in");
+        req.flash("success", "You are logged in");
         res.redirect("/");
     });
 
-// Authentication was successful
-passport.serializeUser(function (user, cb) {
-    process.nextTick(function () {
-        cb(null, {
-            id: user.id,
-            username: user.username,
-            active_conversation: user.active_conversation
-        });
-    });
-});
-
-// Authentication failed
-passport.deserializeUser(function (user, cb) { 
-    process.nextTick(function () {
-        return cb(null, user);
-    });
-});
-
-passport.use(new LocalStrategy((username, password, cb) => { 
-    const incorrectMessage = 'Incorrect username or password'
-    findUserbyUsername(username, (err, user) => {
-        if (err) {
-            return cb(incorrectMessage);
-        }
-        if (!user) {
-            return cb(null, false, { message: incorrectMessage });
-        }
-        comparePasswords(password, user.password, (err, isMatch) => {
-            if (err) return cb(err);
-            if (isMatch) {
-                return cb(null, user);
-            } else {
-                return cb(null, false, { message: incorrectMessage });
-            }
-        });
-    });
-}));
 
 /* logout */
 router.get('/logout', (req, res, next) => {
@@ -77,8 +43,8 @@ router.get('/logout', (req, res, next) => {
 router.get('/register', (req, res, next) => {
     res.render('register', {
         page: 'register',
-        subject: 'register',
-        errors: []
+        title: 'register',
+        // errors: req.flash('errors')
     });
 })
 
@@ -87,7 +53,8 @@ router.post('/register',
     body('lastname').notEmpty().isLength({ min: 2, max: 100 }).withMessage('invalid last name'),
     body('username').notEmpty().isLength({ min: 4, max: 18 }).withMessage('invalid username : 4 to 18 characters'),
     body('email').notEmpty().isEmail().withMessage('invalid Email'),
-    body('password1').notEmpty().isLength({ max: 20 }).isStrongPassword({
+    body('password1').notEmpty().isLength({ max: 20 }).withMessage('invalid password: please use 8 to 20 characters, at least 1 number, at least 1 symbol')
+    .isStrongPassword({
         minLength: 8,
         minNumbers: 1,
         minSymbols: 1
@@ -122,14 +89,13 @@ router.post('/register',
             })
             console.log(`create new user: ${req.body.username}`)
             res.location('/');
-            req.flash('registered', `walcome ${req.body.username}, you are now registered`);
+            req.flash('registered', `welcome ${req.body.username}, you are now registered`);
             res.redirect('/');
         } else {                        // unvalid fields of registretion
-            res.render('register', {
-                page: 'register',
-                subject: 'register',
-                errors: result.array()
-            });
+                // req.session.error = result.array()
+                const errors = result.array().map((err) => err.msg);
+                req.flash("errors", errors);
+                res.redirect("/users/register");
 
         }
     })

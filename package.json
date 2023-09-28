@@ -1,12 +1,13 @@
 {
-  "name": "hellom",
+  "name": "morchat",
   "version": "1.0.0",
   "description": "chat",
   "main": "app.js",
   "scripts": {
+    "cypress:open": "cypress open",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./app.js",
-    "dev": "node ./app.js"
+    "dev": "nodemon app.js"
   },
   "author": "Mor David",
   "license": "ISC",
@@ -20,7 +21,6 @@
     "express-session": "^1.17.3",
     "express-validator": "^7.0.1",
     "flash": "^1.1.0",
-    "i": "^0.3.7",
     "mongoose": "^7.4.3",
     "npm": "^9.8.1",
     "passport": "^0.6.0",
@@ -28,5 +28,8 @@
     "passport-remember-me": "^0.0.1",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2"
+  },
+  "devDependencies": {
+    "cypress": "^13.2.0"
   }
 }

@@ -1,27 +1,27 @@
 const dotenv = require('dotenv');
-dotenv.config();
 const express = require('express');
-const app = express();
 const http = require('http');
-const server = http.createServer(app);
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const flash = require('connect-flash');
-const mongoose = require('mongoose');
 const { Server } = require("socket.io");
-
-const routes = require('./routes/index');
-const users = require('./routes/users');
-const chat = require('./routes/chat');
-
+const routers = require('./routers/index');
+const users = require('./routers/users');
+const chat = require('./routers/chat');
 const moongoseConnectDB = require('./models/db');
+const {ioHandler , ioAuthorization} = require('./models/io.js')
+const {initPassport} = require('./utils/passport')
 
+//setup express app
+const app = express();
+const server = http.createServer(app);
 
 // env
-PORT = process.env.PORT;
+dotenv.config();
+const { PORT, SECRET_KEY } = process.env;
 
 // set view
 app.set('view engine', 'ejs');
@@ -38,7 +38,7 @@ const io = new Server(server);
 
 // handle session
 sessionMiddleware = session({
-  secret: process.env.SECRET_KEY,
+  secret: SECRET_KEY,
   saveUninitialized: true,
   resave: true
 });
@@ -49,23 +49,17 @@ app.use(sessionMiddleware)
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.authenticate('session'));
+initPassport();
 
 // socket.io middleware
-
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));
 
-io.use((socket, next) => {
-  if (socket.request.isAuthenticated()) {
-    next();
-  } else {
-    next(new Error('unauthorized'))
-  }
-});
+io.use(ioAuthorization);
 
-require('./models/io.js')(io);
+ioHandler(io)
 
 
 // pass socket.io to app
@@ -88,8 +82,7 @@ app.get('*', (req, res, next) => {
 })
 
 //db
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_URL}/?retryWrites=true&w=majority`;
-moongoseConnectDB(uri);
+moongoseConnectDB();
 
 // start listening
 server.listen(PORT, () => {
@@ -97,6 +90,6 @@ server.listen(PORT, () => {
 });
 
 // route
-app.use('/', routes);
+app.use('/', routers);
 app.use('/users', users);
 app.use('/chat', chat);

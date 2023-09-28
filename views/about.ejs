@@ -3,12 +3,12 @@
     <%-include('./partials/_nav');%>
     <div class="container mt-2">
       <header>
-        <h2>Welcome</h2>
-        <p>Here is the homepage for <%= page %></p>
+        <h2 data-test="welcome-title">Welcome</h2>
+        <p data-test="welcome-here-page">Here is the <%= page %> page</p>
       </header>
       <section>
-        <h2>Here is the body</h2>
-        <p>
+        <h2 data-test="section-title">Here is the body</h2>
+        <p data-test="section-p">
           Lorem ipsum dolor sit, amet consectetur adipisicing elit. Totam,
           repellendus!
         </p>

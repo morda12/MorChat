@@ -7,7 +7,7 @@
                 <div class="row d-flex flex-row align-items-center p-2 m-0"
                     style="background-color:rgb(100, 164, 255); min-height:65px;">
                     <i class="fas fa-arrow-left p-2 mx-3 my-1 text-white" style="font-size: 1.5rem; cursor: pointer;" onclick=""></i>
-                    <div class="text-black font-weight-bold" id="username">
+                    <div data-test="conv-bar-username" class="text-black font-weight-bold" id="username">
                         <%= username %>
                     </div>
                 </div>
@@ -16,11 +16,11 @@
                 </div>
 
             </div>
-            <div class="tn-group btn-group-toggle d-flex flex-column w-100" id="conversations" data-toggle="buttons" style="height: 500px; overflow:auto; ">
+            <div data-test="conv-list" class="tn-group btn-group-toggle d-flex flex-column w-100" id="conversations" data-toggle="buttons" style="height: 500px; overflow:auto; ">
+                <% var convNumber = 0 %>
                 <% active_conversation.forEach(function(conv) { %>
-                    <button type="button" class="btn btn-light" id="<%= conv %>" style="background: rgb(209, 223, 242);" >
-                        <%= conv %>
-                    </button>
+                    <button data-test=<%=`conv-${convNumber}`%> type="button" class="btn btn-light" id="<%= conv %>" style="background: rgb(209, 223, 242);" ><%=conv%></button>
+                    <% convNumber= convNumber + 1 %>
                     <% }) %>
             </div>
         </div>
@@ -28,7 +28,7 @@
         <!-- Message Area -->
         <div class="col">
         <div class="text-center bg-light">
-            <h6 id="friend header" class="mb-6">Please select who you would like to chat with</h3>
+            <h6 data-test="current-conv-friend" id="friend header" class="mb-6">Please select who you would like to chat with</h3>
         </div>
         <div class="d-none d-sm-flex flex-column col-12 col-sm-7 col-md-12 p-0 h-80" id="message-area" style="background-color:rgb(209, 223, 242);">
             <div id="messages" type="messages" class=" card-body d-flex flex-column w-100 h-10 rounded shadow-sm " data-mdb-perfect-scrollbar="true" style=" position: relative; height: 500px; overflow:auto; width: 100%;">

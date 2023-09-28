@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose
-var passport = require('passport');
-var LocalStrategy = require('passport-local');
 const bcrypt = require('bcryptjs');
-const { username } = require('react-lorem-ipsum');
 
 const activeConversationSchema = new Schema({
     conv_ID: {
@@ -14,7 +11,6 @@ const activeConversationSchema = new Schema({
         type: String
     }
 });
-
 
 const userSchema = new Schema({
     username: {
@@ -72,7 +68,7 @@ connectUsersToConversation = function (usersName, conversation_ID) {
             .then(() => {
                 usersAlreadyChat(usersName) // Check if the users are already linked in another conversation
                     .then(() => {
-                        updateUsersActiceConversation(usersName, conversation_ID) // Create the connection of the users to the conversation
+                        updateUsersActiveConversation(usersName, conversation_ID) // Create the connection of the users to the conversation
                             .then(() => { resolve(conversation_ID) })
                             .catch(() => { reject(conversation_ID) })
                     })
@@ -99,12 +95,9 @@ usersAlreadyChat = async function (usersName) {
     return new Promise(async (resolve, reject) => {
         await User.find({ username: { $in: usersName } })
             .then(async (users) => {
-                let users_conv_IDs = []
-                users.forEach((user) => {
-                    user.active_conversation.forEach((conv) => {
-                        users_conv_IDs.push(conv.conv_ID)
-                    })
-                });
+
+    const users_conv_IDs = users.flatMap((user) => user.active_conversation.map(({conv_ID}) => conv_ID))
+
                 if (users_conv_IDs.length === new Set(users_conv_IDs).size) { resolve() }
                 else { reject() }
             })
@@ -113,9 +106,9 @@ usersAlreadyChat = async function (usersName) {
 }
 
 // Create the connection of the users to the conversation
-updateUsersActiceConversation = async function (usersName, conversation_ID) {
+updateUsersActiveConversation = async function (usersName, conversation_ID) {
     return new Promise(async (resolve, reject) => {
-        const bulk = await updateUsersActiceConversationBulk(usersName, conversation_ID)
+        const bulk = await updateUsersActiveConversationBulk(usersName, conversation_ID)
         await User.bulkWrite(bulk)
             .then((result) => {
                 if(result.matchedCount===usersName.length){ resolve() }
@@ -137,7 +130,7 @@ async function getUserActiveConversation(username) {
 }
 
 // Creating a bulk to update connection of users to the conversation
-updateUsersActiceConversationBulk = function (usersName, conversation_ID) {
+updateUsersActiveConversationBulk = function (usersName, conversation_ID) {
     let bulk =[{
         updateOne: {
             filter: { username: usersName[0] },

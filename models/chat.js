@@ -42,10 +42,10 @@ createConversation = function (conv) {
     return new Promise((resolve, reject) => {
         Conversation.findOne({}).sort({conv_id: -1}) // find the next conversation_ID
         .then((res) => {
-            const new_conv_id = res.conv_id + 1;
-            conv.conv_id = new_conv_id;
+            if(res === null) { conv.conv_id=0 }
+            else { conv.conv_id = res.conv_id + 1 }
             Conversation.create(conv) // create new conversation
-            .then((res)=>{ resolve(new_conv_id) })
+            .then((res)=>{ resolve(conv.conv_id) })
             .catch((err) => { reject(err) });
         })
         .catch((err) => { reject(err) })
@@ -56,18 +56,17 @@ deleteConversation = function (conv) {
     Conversation.deleteOne({conv_id: conv}).exec();
 }
 
-// Sort conversations from ID list by lastUpdated
-sortConversationsByLastUpdated = function (ID_list) {
+// Get conversations from ID list by lastUpdated
+getConversationsByLastUpdated = function (ID_list) {
     return new Promise((resolve, reject) => {
         Conversation.find({ conv_id: { $in: ID_list } }, 'conv_id').sort({'updatedAt': -1}).exec()
         .then((convs) =>{
-            let newID_list=[];
-            for (const conv of convs) {
-                newID_list.push(conv.conv_id)
-              }
+            const newID_list = convs.reduce((prev, item, index) =>{
+                return {...prev, [item.conv_id]:index}
+            }, {})
             resolve(newID_list, null);
         })
-        .catch((res) =>{ reject(null,res) })
+        .catch((res) => { reject(null,res) })
     })
 }
 
@@ -95,4 +94,4 @@ addMessageToConversation = function (Conv_ID, message){
     })
 }
 
-module.exports = { Conversation, createConversation, deleteConversation, sortConversationsByLastUpdated, getEndOfConversation, addMessageToConversation};
+module.exports = { Conversation, createConversation, deleteConversation, getConversationsByLastUpdated, getEndOfConversation, addMessageToConversation};
